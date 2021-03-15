@@ -1,6 +1,7 @@
 package calc
 
 import (
+	"errors"
 	"math"
 	"strconv"
 )
@@ -14,9 +15,9 @@ var operators = map[string]func(float64, float64) float64{
 	"^": func(a, b float64) float64 { return math.Pow(a, b) },
 }
 
-func Calculator(rpx_expression string) float64 {
+func Calculator(rpx_expression string) (float64, error) {
 	if rpx_expression == "" {
-		return 0
+		return 0, nil
 	}
 
 	var current string
@@ -37,7 +38,7 @@ func Calculator(rpx_expression string) float64 {
 
 			n := len(float_stack) - 1
 			if n <= 0 {
-				return 0 // Unbalanced expression, calculation is not possible
+				return 0, errors.New("Invalid expression")
 			}
 
 			// Pop two elements
@@ -53,5 +54,5 @@ func Calculator(rpx_expression string) float64 {
 		}
 	}
 
-	return float_stack[0]
+	return float_stack[0], nil
 }

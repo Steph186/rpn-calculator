@@ -33,10 +33,10 @@ func TestConversionEmpty(t *testing.T) {
 }
 
 func TestConversionUnbalanced(t *testing.T) {
-	result, _ := ConvertInflixToPostfix("(")
+	_, err := ConvertInflixToPostfix("(")
 
-	if result != "" {
-		t.Errorf("Unbalanced conversion failed, expected \"\", got %s", result)
+	if err == nil {
+		t.Errorf("Unbalanced conversion failed, expected error but did not get any.")
 	} else {
 		t.Logf("Unbalanced conversion success")
 	}
