@@ -32,7 +32,13 @@ func main() {
 	}
 
 	fmt.Println("Converted into RPN notation:", postfix)
-	fmt.Println("Result:", calc.Calculator(postfix))
+
+	result, calculation_error := calc.Calculator(postfix)
+	if calculation_error != nil {
+		fmt.Println("Error from conversion:", calculation_error.Error())
+		return
+	}
+	fmt.Println("Result:", result)
 
 	return
 }
