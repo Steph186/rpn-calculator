@@ -1,6 +1,9 @@
 package calc
 
-import "strconv"
+import (
+	"math"
+	"strconv"
+)
 
 // compute operation between 2 int given the string operation
 var operators = map[string]func(float64, float64) float64{
@@ -8,6 +11,7 @@ var operators = map[string]func(float64, float64) float64{
 	"-": func(a, b float64) float64 { return a - b },
 	"*": func(a, b float64) float64 { return a * b },
 	"/": func(a, b float64) float64 { return a / b },
+	"^": func(a, b float64) float64 { return math.Pow(a, b) },
 }
 
 func Calculator(rpx_expression string) float64 {
@@ -28,7 +32,8 @@ func Calculator(rpx_expression string) float64 {
 		case "+",
 			"-",
 			"/",
-			"*":
+			"*",
+			"^":
 
 			n := len(float_stack) - 1
 			if n <= 0 {

@@ -103,10 +103,10 @@ func TestConversionComplex(t *testing.T) {
 }
 
 func TestConversionSuperComplex(t *testing.T) {
-	result, _ := ConvertInflixToPostfix("(1+(2+3*2))*4+2")
+	result, _ := ConvertInflixToPostfix("(1+(2+3*2))*4^2+2")
 
-	if result != "1232*++4*2+" {
-		t.Errorf("Conversion failed, expected \"1232*++4*2+\", got %s", result)
+	if result != "1232*++42^*2+" {
+		t.Errorf("Conversion failed, expected \"1232*++42^*2+\", got %s", result)
 	} else {
 		t.Logf("Conversion success")
 	}

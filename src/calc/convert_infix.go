@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-var priorities = map[string]int{"+": 1, "-": 1, "*": 2, "/": 2}
+var priorities = map[string]int{"+": 1, "-": 1, "*": 2, "/": 2, "^": 3}
 
 // compute operation between 2 int given the string operation
 func HasCurrentLowerOrEqualPriority(current, popped string) bool {
@@ -84,9 +84,9 @@ func ConvertInflixToPostfix(inflix_expression string) (string, error) {
 
 	for i := range operator_stack {
 
-		// Push remaining element in stack in postfix
+		// Push remaining elements in stack in postfix
 		var remaining string = string(operator_stack[len(operator_stack)-i-1])
-		if remaining == "(" || remaining == ")" {
+		if remaining == "(" {
 			return "", errors.New("Unbalanced parentheses")
 		}
 
