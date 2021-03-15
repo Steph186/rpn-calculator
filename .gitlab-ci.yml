@@ -1,4 +1,0 @@
-golang:
-  stage: test
-  script:
-    - go test -v ./src/calc
