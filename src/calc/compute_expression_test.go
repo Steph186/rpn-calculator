@@ -1,6 +1,8 @@
 package calc
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestCalculatorEmpty(t *testing.T) {
 	result, _ := Calculator("")
