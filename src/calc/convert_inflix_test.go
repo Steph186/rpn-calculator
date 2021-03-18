@@ -1,6 +1,8 @@
 package calc
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestIsLower1(t *testing.T) {
 	result := HasCurrentLowerOrEqualPriority("-", "/")
