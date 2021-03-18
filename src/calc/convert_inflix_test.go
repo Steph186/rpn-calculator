@@ -45,28 +45,48 @@ func TestConversionUnbalanced(t *testing.T) {
 func TestConversionSum(t *testing.T) {
 	result, _ := ConvertInflixToPostfix("4+2")
 
-	if result != "42+" {
-		t.Errorf("Conversion failed, expected \"42+\", got %s", result)
+	if result != "4 2 +" {
+		t.Errorf("Conversion failed, expected \"4 2 +\", got %s", result)
 	} else {
 		t.Logf("Conversion success")
 	}
 }
 
 func TestConversionSumMultiple(t *testing.T) {
-	result, _ := ConvertInflixToPostfix("4+5+1+6")
+	result, _ := ConvertInflixToPostfix("4+ 5+1+ 6")
 
-	if result != "45+1+6+" {
-		t.Errorf("Conversion failed, expected \"45+1+6+\", got %s", result)
+	if result != "4 5 + 1 + 6 +" {
+		t.Errorf("Conversion failed, expected \"4 5 + 1 + 6 +\", got %s", result)
 	} else {
 		t.Logf("Conversion success")
 	}
 }
 
 func TestConversionDivision(t *testing.T) {
-	result, _ := ConvertInflixToPostfix("6/8")
+	result, _ := ConvertInflixToPostfix("6 /8")
 
-	if result != "68/" {
-		t.Errorf("Conversion failed, expected \"68/\", got %s", result)
+	if result != "6 8 /" {
+		t.Errorf("Conversion failed, expected \"6 8 /\", got %s", result)
+	} else {
+		t.Logf("Conversion success")
+	}
+}
+
+func TestConversionNumbers(t *testing.T) {
+	result, _ := ConvertInflixToPostfix("238-80")
+
+	if result != "238 80 -" {
+		t.Errorf("Conversion failed, expected \"238 80 -\", got %s", result)
+	} else {
+		t.Logf("Conversion success")
+	}
+}
+
+func TestConversionUnaryOperation(t *testing.T) {
+	result, _ := ConvertInflixToPostfix("-80-(-1*4)")
+
+	if result != "0 80 - 0 1 - 4 * -" {
+		t.Errorf("Conversion failed, expected \"0 80 - 0 1 - 4 * -\", got %s", result)
 	} else {
 		t.Logf("Conversion success")
 	}
@@ -75,18 +95,18 @@ func TestConversionDivision(t *testing.T) {
 func TestConversionParenthesisSimple(t *testing.T) {
 	result, _ := ConvertInflixToPostfix("(2)+9")
 
-	if result != "29+" {
-		t.Errorf("Conversion failed, expected \"29+\", got %s", result)
+	if result != "2 9 +" {
+		t.Errorf("Conversion failed, expected \"2 9 +\", got %s", result)
 	} else {
 		t.Logf("Conversion success")
 	}
 }
 
 func TestConversionParenthesis(t *testing.T) {
-	result, _ := ConvertInflixToPostfix("2*(5+(7+2))")
+	result, _ := ConvertInflixToPostfix("2*(55+(7+2))")
 
-	if result != "2572++*" {
-		t.Errorf("Conversion failed, expected \"2572++*\", got %s", result)
+	if result != "2 55 7 2 + + *" {
+		t.Errorf("Conversion failed, expected \"2 55 7 2 + + *\", got %s", result)
 	} else {
 		t.Logf("Conversion success")
 	}
@@ -95,8 +115,8 @@ func TestConversionParenthesis(t *testing.T) {
 func TestConversionComplex(t *testing.T) {
 	result, _ := ConvertInflixToPostfix("3+4*0/(9-2)")
 
-	if result != "340*92-/+" {
-		t.Errorf("Conversion failed, expected \"340*92-/+\", got %s", result)
+	if result != "3 4 0 * 9 2 - / +" {
+		t.Errorf("Conversion failed, expected \"3 4 0 * 9 2 - / +\", got %s", result)
 	} else {
 		t.Logf("Conversion success")
 	}
@@ -105,8 +125,18 @@ func TestConversionComplex(t *testing.T) {
 func TestConversionSuperComplex(t *testing.T) {
 	result, _ := ConvertInflixToPostfix("(1+(2+3*2))*4^2+2")
 
-	if result != "1232*++42^*2+" {
-		t.Errorf("Conversion failed, expected \"1232*++42^*2+\", got %s", result)
+	if result != "1 2 3 2 * + + 4 2 ^ * 2 +" {
+		t.Errorf("Conversion failed, expected \"1 2 3 2 * + + 4 2 ^ * 2 +\", got %s", result)
+	} else {
+		t.Logf("Conversion success")
+	}
+}
+
+func TestConversionUnitaryOp(t *testing.T) {
+	result, _ := ConvertInflixToPostfix("5*-1")
+
+	if result != "5 0 1 - *" {
+		t.Errorf("Conversion failed, expected \"5 0 1 - *\", got %s", result)
 	} else {
 		t.Logf("Conversion success")
 	}

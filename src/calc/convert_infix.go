@@ -4,35 +4,63 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 var priorities = map[string]int{"+": 1, "-": 1, "*": 2, "/": 2, "^": 3}
 
-// compute operation between 2 int given the string operation
+// Compare priorities of current with previous ones
 func HasCurrentLowerOrEqualPriority(current, popped string) bool {
 	return priorities[current] <= priorities[popped]
 }
 
-func ConvertInflixToPostfix(inflix_expression string) (string, error) {
-	if inflix_expression == "" {
+// Check if next iteration is digit: if true, push in postfix and skip next it
+func PushNextDigits(inflix string, postfix string, i int, lenght int) (string, int) {
+	var err error
+	for err == nil && i < lenght-1 {
+		_, err = strconv.Atoi(string(inflix[i+1]))
+
+		if err == nil {
+			i = i+1
+			postfix = fmt.Sprintf("%s%s", postfix, string(inflix[i]))
+		}
+	}
+
+	return postfix, i
+}
+
+func ConvertInflixToPostfix(inflix string) (string, error) {
+	if inflix == "" {
 		return "", nil
 	}
 
 	var current string
-	var postfix_expression string
+	var postfix string
 	var operator_stack []string
+	var string_length int = len(inflix)
 
-	for i := 0; i < len(inflix_expression); i++ {
-		current = string(inflix_expression[i])
+	// this variable keeps track of last char. If operation, means next "-" is unitary
+	var is_unitary_operation bool = true
+
+	for i := 0; i < string_length; i++ {
+		current = string(inflix[i])
+
+		if current == " " {
+			continue
+		}
 
 		_, err := strconv.Atoi(current)
 		if err == nil {
 			// CASE 1: INTEGER - push in postfix
-			postfix_expression = fmt.Sprintf("%s%s", postfix_expression, current)
+			postfix = fmt.Sprintf("%s %s", postfix, current)
+			is_unitary_operation = false
+
+			postfix, i = PushNextDigits(inflix, postfix, i, string_length)
 
 		} else if current == ")" {
 			// CASE 2: Closing parenthesis - pop from operator stack until "("
 			foundOpening := false
+			is_unitary_operation = false
 
 			for len(operator_stack) > 0 {
 				// Pop element
@@ -46,7 +74,7 @@ func ConvertInflixToPostfix(inflix_expression string) (string, error) {
 					break
 				} else {
 					// Push in postfix
-					postfix_expression = fmt.Sprintf("%s%s", postfix_expression, popped)
+					postfix = fmt.Sprintf("%s %s", postfix, popped)
 				}
 			}
 
@@ -54,12 +82,20 @@ func ConvertInflixToPostfix(inflix_expression string) (string, error) {
 				return "", errors.New("Unbalanced parentheses")
 			}
 
-		} else if current == "(" || len(operator_stack) == 0 {
-			// CASE 3: Opening parenthesis or empty operator stack
+		} else if current == "(" {
+			// CASE 3: Opening parenthesis
 			operator_stack = append(operator_stack, current)
+			is_unitary_operation = true
+
+		} else if current == "-" && is_unitary_operation {
+			// CASE 4: unitary - . Transform to binary and skip next digit iteration
+			postfix = fmt.Sprintf("%s 0 ", postfix) // add 0
+			postfix, i = PushNextDigits(inflix, postfix, i, string_length)
+			postfix = fmt.Sprintf("%s -", postfix) // add binary -
+			is_unitary_operation = false
 
 		} else {
-			// CASE 4: Process Operations * / + -
+			// CASE 5: Process Operations * / + -
 			for len(operator_stack) > 0 {
 
 				n := len(operator_stack) - 1
@@ -72,13 +108,14 @@ func ConvertInflixToPostfix(inflix_expression string) (string, error) {
 
 				} else {
 					// if lower priority element: pop it out of the stack and push into postfix exp
-					postfix_expression = fmt.Sprintf("%s%s", postfix_expression, last_pushed)
+					postfix = fmt.Sprintf("%s %s", postfix, last_pushed)
 					operator_stack = operator_stack[:n]
 				}
 			}
 
 			// Add current operation to stack
 			operator_stack = append(operator_stack, current)
+			is_unitary_operation = true
 		}
 	}
 
@@ -90,8 +127,8 @@ func ConvertInflixToPostfix(inflix_expression string) (string, error) {
 			return "", errors.New("Unbalanced parentheses")
 		}
 
-		postfix_expression = fmt.Sprintf("%s%s", postfix_expression, remaining)
+		postfix = fmt.Sprintf("%s %s", postfix, remaining)
 	}
 
-	return postfix_expression, nil
+	return strings.TrimSpace(postfix), nil
 }
